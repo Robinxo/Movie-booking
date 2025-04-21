@@ -33,11 +33,13 @@ import router from "./routes/user.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import movieRouter from "./routes/movie.routes.js";
 import bookingRouter from "./routes/booking.routes.js";
+import paymentRouter from "./routes/payment.routes.js";
 
 // routes declaration
 app.use("/users", router);
 app.use("/admin", adminRouter);
 app.use("/movies", movieRouter);
 app.use("/bookings", bookingRouter);
+app.use("/payments", paymentRouter);
 
 export default app;

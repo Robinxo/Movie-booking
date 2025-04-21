@@ -4,6 +4,12 @@ import { User } from "../models/User.js";
 import Movie from "../models/Movies.js";
 import ApiError from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import Razorpay from 'razorpay';
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 const createBooking = asyncHandler(async (req, res) => {
   const {
@@ -12,14 +18,22 @@ const createBooking = asyncHandler(async (req, res) => {
     showingDate,
     seats,
     ticketPrice,
+    orderId,
+    paymentId
   } = req.body;
 
-  if (!movieId || !userId || !showingDate || !seats || !Array.isArray(seats)) {
+  if (!movieId || !userId || !showingDate || !seats || !Array.isArray(seats) || !orderId || !paymentId) {
     throw new ApiError(400, "Missing required booking information");
   }
 
   if (ticketPrice <= 0 || typeof ticketPrice !== "number") {
     throw new ApiError(400, "Invalid ticket price");
+  }
+
+  // Verify the order status
+  const order = await razorpay.orders.fetch(orderId);
+  if (order.status !== 'paid') {
+    throw new ApiError(400, "Payment not completed");
   }
 
   const session = await mongoose.startSession();
@@ -87,6 +101,9 @@ console.log(showing)
       seats: bookedSeats,
       totalPrice,
       showingId: showing._id,
+      orderId,
+      paymentId,
+      paymentStatus: 'paid'
     });
 
     await booking.save({ session });

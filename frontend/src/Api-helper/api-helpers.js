@@ -177,6 +177,8 @@ export const newBooking = async (data) => {
       showingDate: data.showingDate,
       seats: data.seats,
       ticketPrice: data.ticketPrice,
+      orderId: data.orderId,
+      paymentId: data.paymentId
     }, {
       withCredentials: true,
       headers: {

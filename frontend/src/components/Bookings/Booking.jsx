@@ -9,8 +9,10 @@ import {
   MenuItem,
   Select,
   Typography,
+  Alert,
 } from "@mui/material";
 import { useSelector } from "react-redux";
+import PaymentButton from "../PaymentButton";
 
 const labelStyle = { mt: 4, mb: 2 };
 
@@ -22,6 +24,8 @@ const Booking = () => {
   const [movie, setMovie] = useState();
   const [availableDates, setAvailableDates] = useState([]);
   const [availableSeats, setAvailableSeats] = useState([]);
+  const [error, setError] = useState("");
+  const [selectedSeats, setSelectedSeats] = useState([]);
 
   useEffect(() => {
     getMoviedetails(Id).then((res) => {
@@ -51,28 +55,40 @@ const Booking = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handlePaymentSuccess = async (paymentResponse) => {
+    try {
+      const bookingData = {
+        movie: movie._id,
+        user: localStorage.getItem("userId"),
+        showingDate: inputs.date,
+        seats: selectedSeats,
+        ticketPrice: movie.ticketPrice * selectedSeats.length,
+        orderId: paymentResponse.orderId,
+        paymentId: paymentResponse.paymentId
+      };
 
-    const bookingData = {
-      movie: movie._id, // Movie ID
-      user: localStorage.getItem("userId"), // User ID from localStorage
-      showingDate: inputs.date, // Selected date
-      seats: [inputs.seatNumber], // Convert seatNumber to an array
-      ticketPrice: movie.ticketPrice, // Ticket price from movie details
-    };
+      const res = await newBooking(bookingData);
+      console.log("Booking successful:", res);
+      alert("Booking created successfully!");
+      navigate("/bookings"); // Navigate to bookings page after successful booking
+    } catch (err) {
+      console.error("Error creating booking:", err);
+      setError("Failed to create booking. Please try again.");
+    }
+  };
 
-    console.log("Booking data:", bookingData); // Debugging log
+  const handlePaymentFailure = (error) => {
+    setError(error);
+  };
 
-    newBooking(bookingData)
-      .then((res) => {
-        console.log("Booking successful:", res);
-        alert("Booking created successfully!");
-      })
-      .catch((err) => {
-        console.error("Error creating booking:", err.response?.data || err.message);
-        alert("Failed to create booking. Please try again.");
-      });
+  const handleSeatSelection = (seatNumber) => {
+    setSelectedSeats(prev => {
+      if (prev.includes(seatNumber)) {
+        return prev.filter(seat => seat !== seatNumber);
+      } else {
+        return [...prev, seatNumber];
+      }
+    });
   };
 
   return (
@@ -119,61 +135,70 @@ const Booking = () => {
                 Release Date: {new Date(movie.releaseDate).toDateString()}
               </Typography>
             </Box>
-            <form onSubmit={handleSubmit}>
-              <Box
-                display={"flex"}
-                flexDirection={"column"}
-                justifyContent={"center"}
-                alignContent={"center"}
-                margin={5}
-                width={"35vw"}
-                padding={3}
-                borderRadius={5}
-                boxShadow={"10px 10px 10px #ccc"}
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              justifyContent={"center"}
+              alignContent={"center"}
+              margin={5}
+              width={"35vw"}
+              padding={3}
+              borderRadius={5}
+              boxShadow={"10px 10px 10px #ccc"}
+            >
+              <Typography variant="h5" align="center" mb={1}>
+                Booking Details
+              </Typography>
+              <FormLabel sx={labelStyle}>Pick a Date</FormLabel>
+              <Select
+                value={inputs.date}
+                onChange={handleChange}
+                name="date"
+                variant="standard"
               >
-                <Typography variant="h5" align="center" mb={1}>
-                  Booking Details
-                </Typography>
-                <FormLabel sx={labelStyle}>Pick a Date</FormLabel>
-                <Select
-                  value={inputs.date}
-                  onChange={handleChange}
-                  name="date"
-                  variant="standard"
-                >
-                  {availableDates.map((date, idx) => (
-                    <MenuItem
-                      key={idx}
-                      value={new Date(date).toISOString().split("T")[0]}
-                    >
-                      {new Date(date).toLocaleString()}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormLabel sx={labelStyle}>Seat Number</FormLabel>
-                <Select
-                  value={inputs.seatNumber}
-                  onChange={handleChange}
-                  name="seatNumber"
-                  variant="standard"
-                >
-                  {availableSeats.map((seat) => (
-                    <MenuItem key={seat._id} value={seat.seatNumber}>
-                      {seat.seatNumber}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <Button
-                  sx={{ borderRadius: 5, margin: 6 }}
-                  variant="outlined"
-                  color="success"
-                  type="submit"
-                  disabled={!inputs.date || !inputs.seatNumber}
-                >
-                  Confirm
-                </Button>
+                {availableDates.map((date, idx) => (
+                  <MenuItem
+                    key={idx}
+                    value={new Date(date).toISOString().split("T")[0]}
+                  >
+                    {new Date(date).toLocaleString()}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormLabel sx={labelStyle}>Select Seats</FormLabel>
+              <Box display="flex" flexWrap="wrap" gap={1}>
+                {availableSeats.map((seat) => (
+                  <Button
+                    key={seat._id}
+                    variant={selectedSeats.includes(seat.seatNumber) ? "contained" : "outlined"}
+                    onClick={() => handleSeatSelection(seat.seatNumber)}
+                    sx={{ minWidth: '40px' }}
+                  >
+                    {seat.seatNumber}
+                  </Button>
+                ))}
               </Box>
-            </form>
+              {selectedSeats.length > 0 && (
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Total Amount: ₹{movie.ticketPrice * selectedSeats.length}
+                </Typography>
+              )}
+              {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {error}
+                </Alert>
+              )}
+              {inputs.date && selectedSeats.length > 0 && (
+                <PaymentButton
+                  amount={movie.ticketPrice * selectedSeats.length}
+                  movieTitle={movie.title}
+                  showingDate={inputs.date}
+                  seats={selectedSeats}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentFailure={handlePaymentFailure}
+                />
+              )}
+            </Box>
           </Box>
         </>
       )}

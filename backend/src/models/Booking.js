@@ -45,6 +45,22 @@ const BookingSchema = new mongoose.Schema(
       ref: "Showing",
       description: "the id of the showing from the movie document.",
     },
+    orderId: {
+      type: String,
+      required: true,
+      description: "The Razorpay order ID for this booking.",
+    },
+    paymentId: {
+      type: String,
+      required: true,
+      description: "The Razorpay payment ID for this booking.",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending',
+      description: "The status of the payment for this booking.",
+    }
   },
   {
     timestamps: true,
