@@ -20,7 +20,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Admin created successfully" });
 });
 
-// Login Admin
+// ?ogin Admin
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 

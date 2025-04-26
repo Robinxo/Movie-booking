@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Route, Routes } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import Auth from "./components/Auth/Auth.jsx";
 import AdminProfile from "./Profile/AdminProfile.jsx";
 import UserProfile from "./Profile/UserProfile";

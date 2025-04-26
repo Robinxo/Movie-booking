@@ -51,7 +51,7 @@ const AuthForm = ({ onSubmit, isAdmin }) => {
       isAdmin: isAdmin, // Pass isAdmin flag.
     });
     setOpen(false);
-    navigate("/movies"); // Redirect after login
+    navigate("/movies");
   };
 
   return (
