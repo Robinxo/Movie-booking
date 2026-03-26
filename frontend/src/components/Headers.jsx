@@ -15,54 +15,70 @@ import { useDispatch, useSelector } from "react-redux";
 import { adminActions, userActions } from "../store";
 import { getAllMovies } from "../Api-helper/api-helpers.js";
 
+const tabSx = {
+  color: "rgba(240,240,255,0.7)",
+  fontFamily: "'Outfit', sans-serif",
+  fontWeight: 500,
+  fontSize: "0.85rem",
+  letterSpacing: "0.04em",
+  textTransform: "none",
+  minWidth: 80,
+  transition: "color 0.2s",
+  "&:hover": { color: "#fff" },
+  "&.Mui-selected": { color: "#fff", fontWeight: 700 },
+};
+
 const GuestHeader = ({ value, onChange }) => (
   <Tabs
     value={value}
-    indicatorColor="secondary"
-    textColor="inherit"
+    TabIndicatorProps={{
+      style: {
+        background: "linear-gradient(90deg, #7c3aed, #e91e8c)",
+        height: 3,
+        borderRadius: 2,
+      },
+    }}
     onChange={onChange}
   >
-    <Tab component={Link} to="/movies" label="Movies" value="/movies" />
-    <Tab component={Link} to="/auth" label="Login/signup" value="/auth" />
+    <Tab component={Link} to="/movies" label="Movies" value="/movies" sx={tabSx} />
+    <Tab component={Link} to="/auth" label="Login / Sign up" value="/auth" sx={tabSx} />
   </Tabs>
 );
 
 const UserHeader = ({ value, onChange, handleLogout }) => (
   <Tabs
     value={value}
-    indicatorColor="secondary"
-    textColor="inherit"
+    TabIndicatorProps={{
+      style: {
+        background: "linear-gradient(90deg, #7c3aed, #e91e8c)",
+        height: 3,
+        borderRadius: 2,
+      },
+    }}
     onChange={onChange}
   >
-    <Tab component={Link} to="/movies" label="Movies" value="/movies" />
-    <Tab component={Link} to="/user" label="Profile" value="/user" />
-    <Tab
-      component={Link}
-      to="/"
-      label="Logout"
-      value="/"
-      onClick={handleLogout}
-    />
+    <Tab component={Link} to="/movies" label="Movies" value="/movies" sx={tabSx} />
+    <Tab component={Link} to="/user" label="Profile" value="/user" sx={tabSx} />
+    <Tab component={Link} to="/" label="Logout" value="/" onClick={handleLogout} sx={tabSx} />
   </Tabs>
 );
 
 const AdminHeader = ({ value, onChange, handleLogout }) => (
   <Tabs
     value={value}
-    indicatorColor="secondary"
-    textColor="inherit"
+    TabIndicatorProps={{
+      style: {
+        background: "linear-gradient(90deg, #7c3aed, #e91e8c)",
+        height: 3,
+        borderRadius: 2,
+      },
+    }}
     onChange={onChange}
   >
-    <Tab component={Link} to="/movies" label="Movies" value="/movies" />
-    <Tab component={Link} to="/add" label="Add Movies" value="/add" />
-    <Tab component={Link} to="/admin" label="Profile" value="/admin" />
-    <Tab
-      component={Link}
-      to="/"
-      label="Logout"
-      value="/"
-      onClick={handleLogout}
-    />
+    <Tab component={Link} to="/movies" label="Movies" value="/movies" sx={tabSx} />
+    <Tab component={Link} to="/add" label="Add Movie" value="/add" sx={tabSx} />
+    <Tab component={Link} to="/admin" label="Profile" value="/admin" sx={tabSx} />
+    <Tab component={Link} to="/" label="Logout" value="/" onClick={handleLogout} sx={tabSx} />
   </Tabs>
 );
 
@@ -103,28 +119,88 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="sticky" sx={{ bgcolor: "#2b2d42" }}>
-      <Toolbar>
-        <Box width={"20%"}>
-          <IconButton component={Link} to="/">
-            <TheaterComedyIcon />
-          </IconButton>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        background: "rgba(9,9,15,0.95)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.07)",
+      }}
+    >
+      <Toolbar sx={{ py: 0.5 }}>
+        {/* Logo */}
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1}
+          component={Link}
+          to="/"
+          sx={{ textDecoration: "none", mr: "auto", flexShrink: 0 }}
+        >
+          <Box
+            sx={{
+              width: 38,
+              height: 38,
+              borderRadius: "10px",
+              background: "linear-gradient(135deg, #7c3aed, #e91e8c)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 0 18px rgba(124,58,237,0.5)",
+            }}
+          >
+            <TheaterComedyIcon sx={{ color: "#fff", fontSize: 22 }} />
+          </Box>
+          <Box
+            component="span"
+            sx={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 800,
+              fontSize: "1.15rem",
+              background: "linear-gradient(90deg, #c084fc, #f472b6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: "0.02em",
+              ml: 0.5,
+            }}
+          >
+            CineBook
+          </Box>
         </Box>
-        <Box width={"30%"} margin="auto">
+
+        {/* Search */}
+        <Box width="28%" mx={3}>
           <Autocomplete
             freeSolo
             options={movies.map((option) => option.title)}
             renderInput={(params) => (
               <TextField
-                sx={{ input: { color: "white" } }}
-                variant="standard"
                 {...params}
-                placeholder="Search Movies"
+                placeholder="Search movies…"
+                variant="outlined"
+                size="small"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    fontFamily: "'Outfit', sans-serif",
+                    color: "#e0e0ff",
+                    fontSize: "0.85rem",
+                    borderRadius: "10px",
+                    background: "rgba(255,255,255,0.05)",
+                    "& fieldset": { borderColor: "rgba(255,255,255,0.1)" },
+                    "&:hover fieldset": { borderColor: "rgba(124,58,237,0.5)" },
+                    "&.Mui-focused fieldset": { borderColor: "#7c3aed" },
+                  },
+                  "& .MuiInputBase-input::placeholder": { color: "#8888aa" },
+                  "& .MuiSvgIcon-root": { color: "#8888aa" },
+                }}
               />
             )}
           />
         </Box>
-        <Box display="flex">
+
+        {/* Nav */}
+        <Box display="flex" alignItems="center">
           {isAdminLoggedIn ? (
             <AdminHeader
               value={value}

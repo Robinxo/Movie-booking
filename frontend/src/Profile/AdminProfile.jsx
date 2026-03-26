@@ -3,7 +3,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
 import React, { Fragment, useEffect, useState } from "react";
 import { deleteMovie, getAdminById } from "../Api-helper/api-helpers.js";
-
 import {
   Button,
   List,
@@ -11,12 +10,14 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import MovieIcon from "@mui/icons-material/Movie";
 
 const AdminProfile = () => {
   const [Admin, setAdmin] = useState();
+
   const handleDelete = async (movieTitle) => {
     try {
-      await deleteMovie({ title: movieTitle }); // Pass an object to deleteMovie
+      await deleteMovie({ title: movieTitle });
       console.log("Movie deleted successfully:", movieTitle);
     } catch (error) {
       console.error("Error deleting movie:", error);
@@ -25,123 +26,201 @@ const AdminProfile = () => {
 
   useEffect(() => {
     getAdminById()
-      .then((res) => {
-        setAdmin(res.admin);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((res) => setAdmin(res.admin))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
     <Box
-      width="100%"
-      display="flex"
-      alignItems="flex-start"
-      padding={4}
-      gap={4}
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#0a0a12",
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        gap: 3,
+        px: { xs: 2, md: 5 },
+        py: 5,
+        fontFamily: "'Outfit', sans-serif",
+      }}
     >
       <Fragment>
+        {/* Admin Info Card */}
         {Admin && (
           <Box
-            flexDirection="column"
-            alignItems="center"
-            width={{ xs: "100%", md: "30%" }}
-            padding={4}
-            boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-            borderRadius={8}
-            bgcolor="white"
+            sx={{
+              flexShrink: 0,
+              width: { xs: "100%", md: 280 },
+              bgcolor: "#16162a",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "20px",
+              p: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              alignSelf: "flex-start",
+            }}
           >
-            <AccountCircleIcon
+            <Box
               sx={{
-                fontSize: "8rem",
-                textAlign: "center",
+                width: 88,
+                height: 88,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #7c3aed, #e91e8c)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 mb: 2,
-                color: "#673ab7",
+                boxShadow: "0 0 28px rgba(124,58,237,0.4)",
               }}
-            />
+            >
+              <AccountCircleIcon sx={{ fontSize: 52, color: "#fff" }} />
+            </Box>
 
             <Typography
-              mt={2}
-              padding={2}
-              width="100%"
-              textAlign="center"
-              border="1px solid #e0e0e0"
-              borderRadius={8}
-              bgcolor="#f5f5f5"
-              color="#333"
-              fontWeight="600"
+              sx={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                color: "#f0f0ff",
+                fontSize: "1.1rem",
+                mb: 0.5,
+              }}
             >
-              Email: {Admin.email}
+              Admin
             </Typography>
+
+            <Box
+              sx={{
+                width: "100%",
+                mt: 2,
+                p: 1.5,
+                bgcolor: "rgba(255,255,255,0.04)",
+                borderRadius: "10px",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "0.78rem",
+                  color: "#8888aa",
+                  mb: 0.3,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                }}
+              >
+                Email
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "0.9rem",
+                  color: "#c084fc",
+                  fontWeight: 600,
+                  wordBreak: "break-all",
+                }}
+              >
+                {Admin.email}
+              </Typography>
+            </Box>
           </Box>
         )}
 
+        {/* Added Movies */}
         {Admin && Admin.addedMovies.length > 0 && (
-          <Box
-            width={{ xs: "100%", md: "70%" }}
-            display="flex"
-            flexDirection="column"
-            boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-            borderRadius={8}
-            bgcolor="white"
-            padding={4}
-          >
-            <Typography
-              variant="h4"
-              fontFamily="Roboto, sans-serif"
-              textAlign="center"
-              padding={3}
-              color="#212121"
-              fontWeight="700"
-            >
-              Added Movies
-            </Typography>
-            <Box
-              margin="auto"
-              display="flex"
-              flexDirection="column"
-              width={{ xs: "90%", md: "80%" }}
-            >
-              <List>
-                {Admin.addedMovies.map((movie, index) => (
-                  <ListItem
-                    key={index}
+          <Box flex={1}>
+            <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "10px",
+                  background: "linear-gradient(135deg, #7c3aed, #e91e8c)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 0 16px rgba(124,58,237,0.4)",
+                  flexShrink: 0,
+                }}
+              >
+                <MovieIcon sx={{ color: "#fff", fontSize: 20 }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, color: "#f0f0ff", lineHeight: 1 }}
+                >
+                  Added Movies
+                </Typography>
+                <Typography sx={{ fontFamily: "'Outfit', sans-serif", color: "#8888aa", fontSize: "0.8rem" }}>
+                  {Admin.addedMovies.length} movie{Admin.addedMovies.length !== 1 ? "s" : ""} added
+                </Typography>
+              </Box>
+            </Box>
+
+            <List disablePadding>
+              {Admin.addedMovies.map((movie, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    bgcolor: "#16162a",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderRadius: "14px",
+                    mb: 1.5,
+                    p: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    transition: "border-color 0.2s",
+                    "&:hover": { borderColor: "rgba(124,58,237,0.35)" },
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={movie.posterUrl}
+                    alt={movie.title}
                     sx={{
-                      bgcolor: "#f0f0f0", // Light gray background
-                      color: "#333", // Darker text color
-                      textAlign: "left",
-                      margin: 1,
-                      borderRadius: 4,
-                      padding: 2,
-                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                      display: "flex", // Enable flexbox for image and text arrangement
-                      alignItems: "center", // Align items vertically in the center
+                      width: 56,
+                      height: 76,
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <ListItemText
+                    primary={movie.title}
+                    primaryTypographyProps={{
+                      fontFamily: "'Outfit', sans-serif",
+                      fontWeight: 700,
+                      color: "#f0f0ff",
+                      fontSize: "0.95rem",
+                    }}
+                  />
+                  <Button
+                    onClick={() => handleDelete(movie.title)}
+                    variant="outlined"
+                    size="small"
+                    startIcon={<DeleteIcon sx={{ fontSize: "16px !important" }} />}
+                    sx={{
+                      flexShrink: 0,
+                      fontFamily: "'Outfit', sans-serif",
+                      fontWeight: 600,
+                      textTransform: "none",
+                      fontSize: "0.78rem",
+                      borderRadius: "8px",
+                      color: "#ef4444",
+                      borderColor: "rgba(239,68,68,0.3)",
+                      "&:hover": {
+                        borderColor: "#ef4444",
+                        background: "rgba(239,68,68,0.08)",
+                      },
                     }}
                   >
-                    <Box
-                      component="img"
-                      src={movie.posterUrl} // Assuming movie object has posterUrl
-                      alt={movie.title}
-                      sx={{
-                        height: 80,
-                        width: 60, // Adjust image width as needed
-                        marginRight: 2, // Spacing between image and text
-                        borderRadius: 2,
-                      }}
-                    />
-                    <ListItemText
-                      primary={`Movie: ${movie.title}`}
-                      primaryTypographyProps={{ fontWeight: "600" }}
-                    />
-                    {console.log(movie.title)}
-                    <Button onClick={() => handleDelete(movie.title)}>
-                      <DeleteIcon />
-                    </Button>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
+                    Delete
+                  </Button>
+                </ListItem>
+              ))}
+            </List>
           </Box>
         )}
       </Fragment>
