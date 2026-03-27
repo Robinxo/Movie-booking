@@ -42,6 +42,22 @@ const GuestHeader = ({ value, onChange }) => (
   >
     <Tab component={Link} to="/movies" label="Movies" value="/movies" sx={tabSx} />
     <Tab component={Link} to="/auth" label="Login / Sign up" value="/auth" sx={tabSx} />
+    <Tab
+      component={Link}
+      to="/adminLogin"
+      label="Admin Login"
+      value="/adminLogin"
+      sx={{
+        ...tabSx,
+        color: "rgba(196,132,252,0.8)",
+        border: "1px solid rgba(124,58,237,0.4)",
+        borderRadius: "8px",
+        ml: 1,
+        px: 1.5,
+        "&:hover": { color: "#c084fc", borderColor: "rgba(124,58,237,0.8)" },
+        "&.Mui-selected": { color: "#c084fc", fontWeight: 700 },
+      }}
+    />
   </Tabs>
 );
 
